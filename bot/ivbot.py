@@ -43,8 +43,10 @@ def get_iv():
             dt = datetime.fromtimestamp(int(execution.get('time')[0:10]))
             strike = k
             side = execution.get('side')
-            prices = prices.append(pd.Series([symbol, size, price, miv, iv, dt, strike, 'Call', side],
-                                             index=['symbol', 'size', 'price', 'miv', 'iv', 'datetime', 'strike', 'pc', 'side']), ignore_index=True)
+            prices = pd.concat([prices,
+                                pd.Series([symbol, size, price, miv, iv, dt, strike, 'Call', side],
+                                           index=['symbol', 'size', 'price', 'miv', 'iv', 'datetime', 'strike', 'pc', 'side']).to_frame().T]
+                              )
         except:
             pass
 
@@ -61,8 +63,10 @@ def get_iv():
             dt = datetime.fromtimestamp(int(execution.get('time')[0:10]))
             strike = k
             side = execution.get('side')
-            prices = prices.append(pd.Series([symbol, size, price, miv, iv, dt, strike, 'Put', side],
-                                             index=['symbol', 'size', 'price', 'miv', 'iv', 'datetime', 'strike', 'pc', 'side']), ignore_index=True)
+            prices = pd.concat([prices,
+                                pd.Series([symbol, size, price, miv, iv, dt, strike, 'Put', side],
+                                           index=['symbol', 'size', 'price', 'miv', 'iv', 'datetime', 'strike', 'pc', 'side']).to_frame().T]
+                              )
         except:
             pass
 
@@ -85,8 +89,10 @@ def get_iv():
     sns.lineplot(data=prices.assign(pc = lambda df: df['pc']+'-'+df['symbol'].apply(lambda x: x.split('-')[1])),
                  x='strike', y='price', hue='pc', marker='o')
     plt.savefig('price.png')
-
-    return prices
+    
+    op_spot = prices.assign(datetime = lambda df: df['datetime'].dt.round('min'))
+    op_spot = pd.merge(op_spot, spot_prices, on='datetime')
+    return op_spot
 
 
 import discord

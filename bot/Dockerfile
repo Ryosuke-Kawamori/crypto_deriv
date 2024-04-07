@@ -59,8 +59,11 @@ RUN sudo apt-get -y update  &&\
     sudo apt-get -y install unzip &&\
     sudo update-locale LANG=ja_JP.UTF-8
 
+
 # discord
-RUN python3.8 -m pip install discord
+RUN python3.8 -m pip install discord &&\
+    sudo apt install ca-certificates &&\
+    sudo update-ca-certificates --fresh
 
 # 定時実行ジョブ
 RUN sudo apt-get -y install cron
