@@ -14,7 +14,6 @@ services:
       PYTHONPATH: /home/app
     networks:
       - app-net
-    command: python3.8 /home/app/crypto_deriv/bot/ivbot.py
     tty: true
 
   jupyter:
@@ -32,7 +31,7 @@ services:
     networks:
       - app-net
     ports:
-      - 8890:8888
+      - 8890:8890
     tty: true
 
 networks:

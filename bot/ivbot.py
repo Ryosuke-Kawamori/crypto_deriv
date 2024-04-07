@@ -28,7 +28,7 @@ def get_iv():
 
     ### OptionPriceからIV計算
     _today = date.today()
-    prices = pd.DataFrame(columns = {'symbol', 'size', 'price', 'miv', 'iv', 'datetime', 'strike', 'pc', 'side'})
+    prices = pd.DataFrame(columns = ['symbol', 'size', 'price', 'miv', 'iv', 'datetime', 'strike', 'pc', 'side'])
 
     for k in [round(spot/250)*250+250*i for i in range(-100,100)]:
         params = {'category': 'option', 'symbol': f'''BTC-{_today.day}{_today.strftime('%b').upper()}{str(_today.year)[2:4]}-{k}-C''', 'limit': '1'}
