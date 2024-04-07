@@ -1,0 +1,40 @@
+version: '2.3'
+services:
+
+  bot:
+    build:
+      context: .
+      dockerfile: ./bot/Dockerfile
+    volumes:
+      - /home/rkawamori/Asobi/crypto_deriv:/home/app
+    env_file:
+      - .env
+    environment:
+      TZ: Asia/Tokyo
+      PYTHONPATH: /home/app
+    networks:
+      - app-net
+    command: python3.8 /home/app/crypto_deriv/bot/ivbot.py
+    tty: true
+
+  jupyter:
+    build:
+      context: .
+      dockerfile: ./bot/Dockerfile
+    volumes:
+      - /home/rkawamori/Asobi/crypto_deriv:/home/app
+    env_file:
+      - .env
+    environment:
+      JUPYTER_PATH: /home/app
+      TZ: Asia/Tokyo
+      PYTHONPATH: /home/app
+    networks:
+      - app-net
+    ports:
+      - 8890:8888
+    tty: true
+
+networks:
+  app-net:
+    driver: bridge
