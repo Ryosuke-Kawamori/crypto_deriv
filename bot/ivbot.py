@@ -7,6 +7,7 @@ import scipy.stats as st
 import scipy
 import io
 import seaborn as sns
+from bot.frame_to_img import render_mpl_table
 
 def get_iv():
 
@@ -89,9 +90,18 @@ def get_iv():
     sns.lineplot(data=prices.assign(pc = lambda df: df['pc']+'-'+df['symbol'].apply(lambda x: x.split('-')[1])),
                  x='strike', y='price', hue='pc', marker='o')
     plt.savefig('price.png')
-    
+
+    # Bybit Table
     op_spot = prices.assign(datetime = lambda df: df['datetime'].dt.round('min'))
     op_spot = pd.merge(op_spot, spot_prices, on='datetime')
+    fig, ax = render_mpl_table(_img, col_width=2)
+    _img = (op_spot
+        .sort_values('iv', ascending=False)[['datetime', 'symbol', 'pc', 'price', 'size', 'symbol', 'strike', 'iv', 'side', 'last']]
+        .rename(columns = {'last': 'Spot'}).head(4)
+        )
+    _img.columns = [_col.upper() for _col in _img.columns]
+    plt.savefig('table.png')
+
     return op_spot
 
 
