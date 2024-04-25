@@ -32,6 +32,7 @@ services:
       - app-net
     ports:
       - 8890:8890
+      - 8000:8000
     tty: true
 
 networks:
