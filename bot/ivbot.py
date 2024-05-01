@@ -1,7 +1,7 @@
 import discord
 import os
-from bot.get_iv import get_last_iv, get_askbid_iv
-from api.bybit.bybit_stats import trade_pnl
+from bot.get_iv import last_iv, askbid_iv
+from api.bybit.bybit_stats import pnl
 
 # 自分のBotのアクセストークンに置き換えてください
 TOKEN = os.getenv('TOKEN')
@@ -29,16 +29,18 @@ async def on_message(message):
         await message.channel.send('にゃーん')
     # IV
     if message.content == '/iv':
-        get_last_iv()
-        get_askbid_iv()
-        #await message.channel.send(file=discord.File('price.png'))
+        last_iv()
+        askbid_iv()
         await message.channel.send(file=discord.File('askbidiv.png'))
         await message.channel.send(file=discord.File('iv.png'))
         await message.channel.send(file=discord.File('table.png'))
     # PnL
     if message.content == '/pnl':
-        trade_pnl('./daily_pnl.png')
-        await message.channel.send(file=discord.File('./daily_pnl.png'))
+        pnl('daily_pnl.png')
+        await message.channel.send(file=discord.File('daily_pnl.png'))
+    # Order
+    if message.content == '/orders':
+        await message.channel.send(file=discord.File('orders.png'))
 
 
 # Botの起動とDiscordサーバーへの接続

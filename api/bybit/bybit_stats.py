@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from datetime import datetime
 
-def trade_pnl(fig_path: str):
+def pnl(fig_path: str):
     bybit = Bybit(os.getenv('BYBIT_APIKEY'), os.getenv('BYBIT_SECRET'))
     response = bybit.send_request('GET', 'private', target_path='/v5/execution/list', params={'category':'option', 'limit': '50'})
     trades = pd.DataFrame(response.json().get('result').get('list'))
@@ -26,14 +26,15 @@ def trade_pnl(fig_path: str):
     pnl[['markPrice', 'execPrice', 'markIv', 'orderQty', 'indexPrice', 'execFee', 'execQty', 'deliveryPrice']] = \
         pnl[['markPrice', 'execPrice', 'markIv', 'orderQty', 'indexPrice', 'execFee', 'execQty', 'deliveryPrice']].astype(float)
 
-    pnl[['execTime', 'deliveryTime']] = pnl[['execTime', 'deliveryTime']].apply(lambda x: x.str.slice(0,10).astype(int)).applymap(lambda x: datetime.fromtimestamp(x))
+    pnl[['execTime', 'deliveryTime']] = pnl[['execTime', 'deliveryTime']].apply(lambda x: x.str.slice(0,10).astype(int)).map(lambda x: datetime.fromtimestamp(x))
 
     pnl = (
         pnl
             .assign(KnockIn = lambda df: ((df['CP']=='P') & (df['K']>=df['deliveryPrice'])) | ((df['CP']=='C') & (df['K']<=df['deliveryPrice'])))
-            .assign(PnL = lambda df: (df['execPrice']*df['orderQty']))
-            .assign(PnL = lambda df: df['PnL'].mask(df['KnockIn'], (df['K']-df['indexPrice'])*(df['CP'].replace({'C':1, 'P': -1}))*(df['side'].replace({'Sell': 1, 'Buy': -1}))))
-            .assign(PnL = lambda df: df['PnL']-df['execFee'])
+            .assign(TradePnL = lambda df: (df['execPrice']*df['orderQty']))
+            .assign(DeliverPnL = lambda df: df['execQty']*(df['deliveryPrice']-df['K'])*(df['CP'].replace({'C': '1', 'P': '-1'}).astype(int))*(df['side'].replace({'Sell': '-1', 'Buy': '1'}).astype(int)))
+            .assign(DeliverPnL = lambda df: df['DeliverPnL'].mask(~df['KnockIn'], 0))
+            .assign(PnL = lambda df: df['TradePnL'] + df['DeliverPnL'] - df['execFee'])
     )
 
     daily_pnl = (
