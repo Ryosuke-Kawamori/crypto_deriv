@@ -7,6 +7,7 @@ import seaborn as sns
 import os
 import time
 from api.bybit.bybit import Bybit
+from api.bybit.market_data import spot_ohlc
 from bot.frame_to_img import render_mpl_table
 
 
@@ -18,23 +19,6 @@ def near_future_expiry() -> datetime:
     else:
         expiry_1d = datetime(now.year, now.month, now.day, 17, 0, 0)
     return expiry_1d
-
-
-def spot_ohlc(symbol: str = 'BTCUSDT', interval: str = '60'):
-    ### SpotPrice
-    params = {'category': 'linear', 'symbol': symbol, 'interval': interval,
-              'start': str(int((datetime.now()+timedelta(days=-30)).timestamp()))+'000',
-              'end': str(int((datetime.now().timestamp())))+'000',
-              'limit': '1000'}
-    bybit = Bybit(os.getenv('BYBIT_APIKEY'), os.getenv('BYBIT_SECRET'))
-    spot_prices = bybit.send_request('GET', 'public', '/v5/market/mark-price-kline', params).json().get('result').get('list')
-
-    spot_prices = pd.DataFrame(spot_prices)
-    spot_prices.columns = ['datetime', 'open', 'high', 'low', 'last']
-    spot_prices['datetime'] = spot_prices['datetime'].str.slice(0,10).apply(lambda x: datetime.fromtimestamp(int(x)))
-    spot_prices[['open', 'high', 'low', 'last']] = spot_prices[['open', 'high', 'low', 'last']].astype(float)
-
-    return spot_prices
 
 
 def last_iv(basecoin: str = 'BTC', n_day: int = 0, iv_fig_path: str = 'iv.png', price_fig_path: str = 'price.png', table_fig_path: str = 'table.png'):

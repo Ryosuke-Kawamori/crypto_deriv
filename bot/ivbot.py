@@ -1,6 +1,7 @@
 import discord
 import os
 from discord.ext import commands
+from bot.gamma_exposure import gamma_exposure
 from bot.get_iv import last_iv, askbid_iv
 from api.bybit.bybit_stats import pnl as bybitpnl
 
@@ -38,6 +39,12 @@ async def iv(ctx, basecoin: str = 'BTC', n_day: str = '0'):
 async def pnl(ctx):
     bybitpnl('daily_pnl.png')
     await ctx.send(file=discord.File('daily_pnl.png'))
+
+# Gamma Exposure
+@bot.command()
+async def pnl(ctx):
+    gamma_exposure('gamma_exposure.png')
+    await ctx.send(file=discord.File('gamma_exposure.png'))
 
 # Show Orders
 @bot.command()
