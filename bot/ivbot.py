@@ -42,7 +42,7 @@ async def pnl(ctx):
 
 # Gamma Exposure
 @bot.command()
-async def grxp(ctx, basecoin: str = 'BTC'):
+async def gexp(ctx, basecoin: str = 'BTC'):
     gamma_exposure(basecoin = basecoin, plt_save_path = 'gamma_exposure.png')
     await ctx.send(file=discord.File('gamma_exposure.png'))
 
