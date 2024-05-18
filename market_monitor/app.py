@@ -9,7 +9,7 @@ import ordjson
 templates = Jinja2Templates(directory='templates')
 app = FastAPI()
 app.mount(
-    '/app',
+    '/market_monitor',
     StaticFiles(
         directory='/'.join(
             os.path.abspath(__file__)
@@ -17,7 +17,7 @@ app.mount(
                 .split('/')[:-1]
         )
     ),
-    name='app',
+    name='market_monitor',
 )
 app.add_middleware(
     CORSMiddleware,

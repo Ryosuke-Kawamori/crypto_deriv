@@ -6,12 +6,12 @@ services:
       context: .
       dockerfile: ./bot/Dockerfile
     volumes:
-      - /home/rkawamori/Asobi/crypto_deriv:/home/app
+      - /home/rkawamori/Asobi/crypto_deriv:/home/
     env_file:
       - .env
     environment:
       TZ: Asia/Tokyo
-      PYTHONPATH: /home/app
+      PYTHONPATH: /home/
     networks:
       - app-net
     tty: true
@@ -21,19 +21,37 @@ services:
       context: .
       dockerfile: ./bot/Dockerfile
     volumes:
-      - /home/rkawamori/Asobi/crypto_deriv:/home/app
+      - /home/rkawamori/Asobi/crypto_deriv:/home/
     env_file:
       - .env
     environment:
-      JUPYTER_PATH: /home/app
+      JUPYTER_PATH: /home/
       TZ: Asia/Tokyo
-      PYTHONPATH: /home/app
+      PYTHONPATH: /home/
     networks:
       - app-net
     ports:
       - 8890:8890
+    tty: true
+
+  market_monitor:
+    build:
+      context: .
+      dockerfile: ./bot/Dockerfile
+    volumes:
+      - /home/rkawamori/Asobi/crypto_deriv:/home/
+    env_file:
+      - .env
+    environment:
+      JUPYTER_PATH: /home/
+      TZ: Asia/Tokyo
+      PYTHONPATH: /home/
+    networks:
+      - app-net
+    ports:
       - 8000:8000
     tty: true
+
 
 networks:
   app-net:
