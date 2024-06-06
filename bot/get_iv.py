@@ -102,6 +102,7 @@ def last_iv(basecoin: str = 'BTC', n_day: int = 0, iv_fig_path: str = 'iv.png', 
 def askbid_iv(basecoin: str = 'BTC', n_day: int = 0, askbid_fig_path: str = 'askbidiv.png'):
     spot_prices = spot_ohlc(symbol=basecoin + 'USDT', interval='3').head(20*24).assign(Return = lambda df: df['last'].pct_change()) # 1Day
     realized_vol = np.sqrt(spot_prices['Return'].pipe(lambda x: x*x).sum()*365)
+    S = spot_prices['last'][0].squeeze()
 
     bybit = Bybit(os.getenv('BYBIT_APIKEY'), os.getenv('BYBIT_SECRET'))
     expiry = near_future_expiry() + timedelta(days=n_day)
@@ -112,14 +113,15 @@ def askbid_iv(basecoin: str = 'BTC', n_day: int = 0, askbid_fig_path: str = 'ask
                                         params={'category':'option', 'baseCoin': basecoin, 'expDate': expiry.strftime('%-d%b%y').upper()})
                      .json().get('result').get('list'))
         .assign(K = lambda df: df['symbol'].apply(lambda x: x.split('-')[2]).astype(int))
-        .pipe(lambda df: df[df['symbol'].str.slice(-1)=='P'])
+        .assign(CP = lambda df: df['symbol'].str.slice(-1))
+        .pipe(lambda df: df[((df['CP']=='P')&(df['K']<=S)) | (df['CP']=='C')&(df['K']>=S)])
         .reset_index(drop=True)
     )
-    bid = op_tickers[['symbol', 'bid1Price', 'bid1Size', 'bid1Iv', 'indexPrice', 'K']].assign(AskBid = 'Bid')
-    ask = op_tickers[['symbol', 'ask1Price', 'ask1Size', 'ask1Iv', 'indexPrice', 'K']].assign(AskBid = 'Ask')
-    bid.columns = ['Symbol', 'Price', 'Size', 'Iv', 'IndexPrice', 'K', 'AskBid']
-    ask.columns = ['Symbol', 'Price', 'Size', 'Iv', 'IndexPrice', 'K', 'AskBid']
-    askbid = pd.concat([ask, bid]).reset_index(drop=True)
+    bid = op_tickers[['symbol', 'bid1Price', 'bid1Size', 'bid1Iv', 'indexPrice', 'K', 'CP']].assign(AskBid = 'Bid')
+    ask = op_tickers[['symbol', 'ask1Price', 'ask1Size', 'ask1Iv', 'indexPrice', 'K', 'CP']].assign(AskBid = 'Ask')
+    bid.columns = ['Symbol', 'Price', 'Size', 'Iv', 'IndexPrice', 'K', 'CP', 'AskBid']
+    ask.columns = ['Symbol', 'Price', 'Size', 'Iv', 'IndexPrice', 'K', 'CP', 'AskBid']
+    askbid = pd.concat([ask, bid]).reset_index(drop=True).assign(AskBid = lambda df: df['CP']+'-'+df['AskBid'])
     askbid[['Price', 'Size', 'Iv', 'IndexPrice', 'K']] = askbid[['Price', 'Size', 'Iv', 'IndexPrice', 'K']].astype(float)
 
     sns.set_style('whitegrid')

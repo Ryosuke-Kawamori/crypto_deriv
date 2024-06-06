@@ -31,7 +31,7 @@ def pnl(fig_path: str='pnl.png'):
     pnl = (
         pnl
             .assign(KnockIn = lambda df: ((df['CP']=='P') & (df['K']>=df['deliveryPrice'])) | ((df['CP']=='C') & (df['K']<=df['deliveryPrice'])))
-            .assign(TradePnL = lambda df: (df['execPrice']*df['execQty']))
+            .assign(TradePnL = lambda df: df['execPrice']*df['execQty']*df['CP'].replace({'C': '1', 'P': '-1'}).astype(int)*(df['side'].replace({'Sell': '-1', 'Buy': '1'}).astype(int)))
             .assign(DeliverPnL = lambda df: df['execQty']*(df['deliveryPrice']-df['K'])*(df['CP'].replace({'C': '1', 'P': '-1'}).astype(int))*(df['side'].replace({'Sell': '-1', 'Buy': '1'}).astype(int)))
             .assign(DeliverPnL = lambda df: df['DeliverPnL'].mask(~df['KnockIn'], 0))
             .assign(PnL = lambda df: df['TradePnL'] + df['DeliverPnL'] - df['execFee'])
