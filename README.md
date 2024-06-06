@@ -11,6 +11,7 @@
   Edit .env file to use private API.  
   https://www.bybit.com/future-activity/ja-JP/developer
   ```angular2html
+  TOKEN = YOUR_DISCORD_BOT_TOKEN
   SSL_CERT_DIR=/etc/ssl/certs
   BYBIT_APIKEY=YOUR_BYBIT_APIKEY
   BYBIT_SECRET=YOUR_BYBIT_SECRET
