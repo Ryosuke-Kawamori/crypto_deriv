@@ -33,7 +33,7 @@ def last_iv(basecoin: str = 'BTC', n_day: int = 0, iv_fig_path: str = 'iv.png', 
         pd.DataFrame(bybit.send_request('GET',
                                         'public',
                                         target_path='/v5/market/tickers',
-                                        params={'category':'option', 'baseCoin': basecoin, 'expDate': expiry.strftime('%d%B%y').upper()})
+                                        params={'category':'option', 'baseCoin': basecoin, 'expDate': expiry.strftime('%-d%b%y').upper()})
                      .json().get('result').get('list'))
             .assign(K = lambda df: df['symbol'].apply(lambda x: x.split('-')[2]).astype(int))
             .reset_index(drop=True)
@@ -109,7 +109,7 @@ def askbid_iv(basecoin: str = 'BTC', n_day: int = 0, askbid_fig_path: str = 'ask
         pd.DataFrame(bybit.send_request('GET',
                                         'public',
                                         target_path='/v5/market/tickers',
-                                        params={'category':'option', 'baseCoin': basecoin, 'expDate': expiry.strftime('%d%B%y').upper()})
+                                        params={'category':'option', 'baseCoin': basecoin, 'expDate': expiry.strftime('%-d%b%y').upper()})
                      .json().get('result').get('list'))
         .assign(K = lambda df: df['symbol'].apply(lambda x: x.split('-')[2]).astype(int))
         .pipe(lambda df: df[df['symbol'].str.slice(-1)=='P'])
