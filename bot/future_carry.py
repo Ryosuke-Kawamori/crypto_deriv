@@ -8,7 +8,7 @@ from api.bybit.bybit import Bybit
 
 pd.set_option('display.max.columns', 30)
 
-def future_carry(plt_save_path: str = 'future_carry.png')
+def future_carry(plt_save_path: str = 'future_carry.png'):
     bybit = Bybit(os.getenv('BYBIT_APIKEY'), os.getenv('BYBIT_SECRET'))
     futures = (
         pd.DataFrame(bybit.send_request('GET',
