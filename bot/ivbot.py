@@ -5,6 +5,7 @@ from bot.gamma_exposure import gamma_exposure
 from bot.get_iv import last_iv, askbid_iv
 from api.bybit.bybit_stats import pnl as bybitpnl
 from bot.term_structure import term_structure
+from bot.future_carry import future_carry
 
 # 自分のBotのアクセストークンに置き換えてください
 TOKEN = os.getenv('TOKEN')
@@ -52,6 +53,11 @@ async def gexp(ctx, basecoin: str = 'BTC', gamma_type: str = 'general'):
 async def terms(ctx, basecoin: str = 'BTC'):
     term_structure(basecoin = basecoin, plt_save_path = 'termstructure.png')
     await ctx.send(file=discord.File('termstructure.png'))
+
+@bot.command()
+async def fcarry(ctx):
+    future_carry( plt_save_path = 'future_carry.png')
+    await ctx.send(file=discord.File('future_carry.png'))
 
 # Show Orders
 @bot.command()
