@@ -31,6 +31,7 @@ def future_carry(plt_save_path: str = 'future_carry.png'):
 
     axtwin = ax.twinx()
     axtwin.bar(futures['deliveryTime'], futures['openInterest'], width=5, color='gray')
+    axtwin.set_ylabel('Open Interest')
 
     sns.lineplot(data=futures, x='deliveryTime', y='CarryYearly', marker='o', ax=ax)
     ax.tick_params(axis='x', labelrotation=90)
