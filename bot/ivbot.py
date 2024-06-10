@@ -56,7 +56,7 @@ async def terms(ctx, basecoin: str = 'BTC'):
 
 @bot.command()
 async def fcarry(ctx):
-    future_carry( plt_save_path = 'future_carry.png')
+    future_carry( plt_save_path = 'future_carry.png'):
     await ctx.send(file=discord.File('future_carry.png'))
 
 # Show Orders
